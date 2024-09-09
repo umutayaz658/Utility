@@ -82,7 +82,7 @@
                 </td>
                 <td class="extend">
                     {% if url.is_active %}
-                    <form method="post" action="{% url 'extend_url_validity' short_url=url.short_url %}" class="extend-form">
+                    <form >
                         {% csrf_token %}
                         <input type="text" name="new_validity_date" class="form-control datetimepicker" required>
                         <button type="submit" class="btn btn-outline-primary btn-sm">Extend</button>

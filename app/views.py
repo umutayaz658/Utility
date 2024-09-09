@@ -2,11 +2,14 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 import requests
 
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1ODcyMTA5LCJpYXQiOjE3MjU4Njg1MDksImp0aSI6Ijc1MWRjZmNkYmIyMjQ0N2I4ODA3MjE3YjUxZmJjY2FkIiwidXNlcl9pZCI6MX0.vig3nasjLere-ReAzypcSUBlGqPaLfQZEAmypLErVXA"
 
 # MAIN PAGES VIEWS: STARTS
 
+
 def home(request):
     return render(request, 'main/main_page.html')
+
 
 #MAIN PAGES VIEWS: ENDS
 
@@ -21,10 +24,9 @@ def url_home(request):
         one_time_only = request.POST.get('one_time_only') == 'on'
         password = request.POST.get('password')
 
-        bearer_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1NjIzOTA5LCJpYXQiOjE3MjU2MjAzMDksImp0aSI6ImMzOWRhZWE3YTZjZTRjNDQ5MDZiOTcxZTJkNjc2ZTkxIiwidXNlcl9pZCI6MX0.Iab2HfSzdVLenDY9C7LHtbxjrBz-EVewotDxTCsDmQM'
         api_url = 'http://167.71.39.190:8000/api/create_short_url/'
         headers = {
-            'Authorization': f'Bearer {bearer_token}',
+            'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
         data = {
@@ -46,7 +48,6 @@ def url_home(request):
 
 def user_urls(request):
     api_url = "http://167.71.39.190:8000/api/urls/"
-    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1NjI3ODIwLCJpYXQiOjE3MjU2MjQyMjAsImp0aSI6IjFjNDNjMmZlNmQzNjQ4OGFiMDE5MjI3MGEzYzcwYTk4IiwidXNlcl9pZCI6MX0.iX1xVdxs-SK3CZOo8rSGJmOG_Tp2FukQ4bVGt7mv8vo"
 
     headers = {
         "Authorization": f"Bearer {token}"
@@ -63,9 +64,9 @@ def user_urls(request):
 
 
 def deactivate_url(request, short_url):
-    API_URL = 'http://167.71.39.190:8000/api/urls/'
+    API_URL = 'http://167.71.39.190:8000/api/update_activity/'
     headers = {
-        'Authorization': f'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1NjI4OTMwLCJpYXQiOjE3MjU2MjUzMzAsImp0aSI6IjQwNjQxZjI3YWViZTQ3MWM5ZjE1ZTJmMGMyMDJlOThhIiwidXNlcl9pZCI6MX0.27ves2E0kQ7SRl4uY0xEMf9vBK3ZC5D97_s28idgy6E',
+        'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json'
     }
 
@@ -81,6 +82,23 @@ def deactivate_url(request, short_url):
         return redirect('user_urls')
 
 
+def delete_url(request, short_url):
+    API_URL = 'http://167.71.39.190:8000/api/delete/'
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.put(
+        f'{API_URL}{short_url}/',
+        json={'is_deleted': True},
+        headers=headers
+    )
+
+    if response.status_code == 200:
+        return redirect('user_urls')
+    else:
+        return redirect('user_urls')
 
 #URL SHORTENER VIEWS: ENDS
 
