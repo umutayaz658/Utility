@@ -82,7 +82,7 @@
                 </td>
                 <td class="extend">
                     {% if url.is_active %}
-                    <form >
+                    <form method="post" action="{% url 'update_validity_period' short_url=url.short_url %}" class="extend-form">
                         {% csrf_token %}
                         <input type="text" name="new_validity_date" class="form-control datetimepicker" required>
                         <button type="submit" class="btn btn-outline-primary btn-sm">Extend</button>
@@ -116,7 +116,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        // Initialize Flatpickr
         flatpickr(".datetimepicker", {
             enableTime: true,
             dateFormat: "Y-m-d H:i",

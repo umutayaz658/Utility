@@ -1,8 +1,10 @@
+from django.utils import timezone
+from datetime import datetime
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 import requests
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1ODcyMTA5LCJpYXQiOjE3MjU4Njg1MDksImp0aSI6Ijc1MWRjZmNkYmIyMjQ0N2I4ODA3MjE3YjUxZmJjY2FkIiwidXNlcl9pZCI6MX0.vig3nasjLere-ReAzypcSUBlGqPaLfQZEAmypLErVXA"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1ODgwOTc1LCJpYXQiOjE3MjU4NzczNzUsImp0aSI6IjY1ZmJkYmYxNmFjNjQ4YzJiZTM3MzUyODI3OTdiMWMwIiwidXNlcl9pZCI6MX0.1A9iG3o4hXa8c9oBmYTFFdi6rHpl4i1wRhi-kYXmhK4"
 
 # MAIN PAGES VIEWS: STARTS
 
@@ -99,6 +101,30 @@ def delete_url(request, short_url):
         return redirect('user_urls')
     else:
         return redirect('user_urls')
+
+
+def update_validity_period(request, short_url):
+    if request.method == 'POST':
+        new_validity_period = request.POST.get('new_validity_date')
+        new_validity_period = datetime.strptime(new_validity_period, '%Y-%m-%d %H:%M')
+        formatted_validity_period = new_validity_period.isoformat()
+
+        API_URL = 'http://167.71.39.190:8000/api/update_validity/'
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.put(
+            f'{API_URL}{short_url}/',
+            json={'validity_period': formatted_validity_period},
+            headers=headers
+        )
+
+        if response.status_code == 200:
+            return redirect('user_urls')
+        else:
+            return redirect('user_urls')
 
 #URL SHORTENER VIEWS: ENDS
 
