@@ -1,8 +1,11 @@
+import json
+
 from django.utils import timezone
 from datetime import datetime
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 import requests
+from django.views.decorators.csrf import csrf_exempt
 
 token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1ODgwOTc1LCJpYXQiOjE3MjU4NzczNzUsImp0aSI6IjY1ZmJkYmYxNmFjNjQ4YzJiZTM3MzUyODI3OTdiMWMwIiwidXNlcl9pZCI6MX0.1A9iG3o4hXa8c9oBmYTFFdi6rHpl4i1wRhi-kYXmhK4"
 
@@ -127,4 +130,47 @@ def update_validity_period(request, short_url):
             return redirect('user_urls')
 
 #URL SHORTENER VIEWS: ENDS
+
+#QR CODE VIEWS: STARTS
+
+
+from django.shortcuts import render
+from django.http import JsonResponse
+import requests
+
+@csrf_exempt
+def qrcode_home(request):
+    if request.method == 'POST':
+        data = request.POST.get('data')
+        download_link = request.POST.get('download_link') == 'on'
+
+        api_url = 'http://167.71.39.190:8000/api/qr-code/'
+        headers = {'Content-Type': 'application/json'}
+        body = {'data': data, 'download_link': download_link}
+
+        response = requests.post(api_url, json=body, headers=headers)
+
+        if response.status_code == 200:
+            # Eğer download_link varsa JSON dönmeli, görsel değil
+            try:
+                response_data = response.json()
+                if 'download_url' in response_data:
+                    # Linki döndürüyoruz
+                    return JsonResponse({
+                        'message': 'QR code generated successfully.',
+                        'download_url': response_data['download_url']
+                    })
+            except json.JSONDecodeError:
+                # Eğer JSON döndüremiyorsa, görsel dönüyor demektir
+                return HttpResponse(
+                    response.content,  # Görsel içeriğini direkt döndür
+                    content_type='image/png'
+                )
+
+        else:
+            return JsonResponse({'error': 'QR code generation failed'}, status=500)
+
+    return render(request, 'qrcode/home.html')
+
+#QR CODE VIEWS: ENDS
 

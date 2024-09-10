@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        #qr-result {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body class="container mt-5">
+    <h1>QR Code Generator</h1>
+    <form id="qr-form" method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="data" class="form-label">Enter Data:</label>
+            <input type="text" class="form-control" id="data" name="data" required>
+        </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="download_link" name="download_link">
+            <label class="form-check-label" for="download_link">
+                Download Link
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary">Generate QR Code</button>
+    </form>
+
+    <div id="qr-result" class="mt-5"></div>
+
+    <script>
+        document.getElementById('qr-form').addEventListener('submit', function (event) {
+            event.preventDefault();  // Sayfanın yeniden yüklenmesini engelle
+
+            const formData = new FormData(this);  // Form verisini al
+
+            fetch('/qrcode/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    return response.json();
+                } else {
+                    return response.blob();
+                }
+            })
+            .then(data => {
+                const resultDiv = document.getElementById('qr-result');
+                resultDiv.innerHTML = '';
+
+                if (data.download_url) {
+                    const textElement = document.createElement('p');
+ü
+                    const label = document.createElement('span');
+                    label.textContent = 'Download Link: ';
+                    textElement.appendChild(label);
+
+                    const link = document.createElement('a');
+                    link.href = data.download_url;
+                    link.textContent = data.download_url;
+                    link.target = '_blank';
+                    textElement.appendChild(link);
+
+                    resultDiv.appendChild(textElement);
+                } else {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = URL.createObjectURL(data);
+                    imgElement.alt = 'QR Code';
+                    resultDiv.appendChild(imgElement);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ho+j7jyWK8fNQe+A12a2t+/gvysK7FTLnk5Gz3VXKYBq5gdmIjRmCsJ0xEjrRM/j"
+            crossorigin="anonymous"></script>
+</body>
+</html>
