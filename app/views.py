@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime
 from django.http import HttpResponse
@@ -178,6 +179,37 @@ def qrcode_home(request):
 
 
 def quicknote_home(request):
+    if request.method == 'POST':
+        send_to = request.POST.get('send_to')
+        text = request.POST.get('text')
+
+        if not send_to or not text:
+            return render(request, 'quicknote/home.html', {'error': 'Fields must be filled.'})
+
+        api_url = 'http://167.71.39.190:8000/api/notes/'
+
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json',
+        }
+
+        body = {
+            'send_to': send_to,
+            'text': text,
+        }
+
+        try:
+            response = requests.post(api_url, json=body, headers=headers)
+
+            if response.status_code == 201:
+                return render(request, 'quicknote/home.html', {'success': True})
+            else:
+                error_message = response.json().get('error', 'Error.')
+                return render(request, 'quicknote/home.html', {'error': error_message})
+
+        except requests.exceptions.RequestException as e:
+            return render(request, 'quicknote/home.html', {'error': 'Request Error.'})
+
     return render(request, 'quicknote/home.html')
 
 
