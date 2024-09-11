@@ -11,4 +11,8 @@ urlpatterns = [
     path('url/validity_period/<str:short_url>/', views.update_validity_period, name='update_validity_period'),
 
     path('qrcode/', views.qrcode_home, name='qrcode_home'),
+
+    path('imagetopdf/', views.imagetopdf_home, name='imagetopdf_home'),
+
+    path('quicknote/', views.quicknote_home, name='quicknote_home'),
 ]

@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 import requests
 from django.views.decorators.csrf import csrf_exempt
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1ODgwOTc1LCJpYXQiOjE3MjU4NzczNzUsImp0aSI6IjY1ZmJkYmYxNmFjNjQ4YzJiZTM3MzUyODI3OTdiMWMwIiwidXNlcl9pZCI6MX0.1A9iG3o4hXa8c9oBmYTFFdi6rHpl4i1wRhi-kYXmhK4"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDkxMjg0LCJpYXQiOjE3MjYwMDQ4ODQsImp0aSI6ImVjMzdhZWNhYTg2MzRlMmM5MDgzYzRkZWFhYTY4NmFhIiwidXNlcl9pZCI6MX0.pvKHNkOFs0q5709LbVAkM1Q45RI8vTWbxOkoD4-6n0w"
 
 # MAIN PAGES VIEWS: STARTS
 
@@ -174,3 +174,47 @@ def qrcode_home(request):
 
 #QR CODE VIEWS: ENDS
 
+#QUIC NOTE VIEWS: STARTS
+
+
+def quicknote_home(request):
+    return render(request, 'quicknote/home.html')
+
+
+#QUICK NOTE VIEWS: ENDS
+
+#IMAGE TO PDF VIEWS: STARTS
+
+
+def imagetopdf_home(request):
+    if request.method == 'POST':
+        files = request.FILES.getlist('image_paths')
+
+        if not files:
+            return JsonResponse({'error': 'No files were uploaded'}, status=400)
+
+        api_url = 'http://167.71.39.190:8000/api/imagetopdf/'
+        headers = {
+            'Authorization': f'Bearer {token}'
+        }
+
+        files_dict = [('image_paths', (file.name, file, file.content_type)) for file in files]
+        response = requests.post(api_url, files=files_dict, headers=headers)
+
+        if response.status_code == 201:
+            response_data = response.json()
+            return JsonResponse({
+                'download_url': response_data.get('download_url', '')
+            })
+        else:
+            try:
+                error_data = response.json()
+            except ValueError:
+                error_data = {'error': 'Unknown error occurred'}
+
+            return JsonResponse({'error': f'PDF generation failed: {error_data.get("error", "Unknown error")}'},
+                                status=response.status_code)
+
+    return render(request, 'imagetopdf/home.html')
+
+#IMAGE TO PDF VIEWS: ENDS

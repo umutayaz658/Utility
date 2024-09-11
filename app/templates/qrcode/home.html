@@ -34,11 +34,15 @@
 
     <div id="qr-result" class="mt-5"></div>
 
+    <div  style="position: fixed; bottom: 0; left: 0; margin-left: 15px; margin-bottom: 15px">
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back</a>
+    </div>
+
     <script>
         document.getElementById('qr-form').addEventListener('submit', function (event) {
-            event.preventDefault();  // Sayfanın yeniden yüklenmesini engelle
+            event.preventDefault();
 
-            const formData = new FormData(this);  // Form verisini al
+            const formData = new FormData(this);
 
             fetch('/qrcode/', {
                 method: 'POST',
