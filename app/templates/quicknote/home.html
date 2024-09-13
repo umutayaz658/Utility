@@ -48,6 +48,11 @@
         <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back</a>
     </div>
 
+    <div style="position: fixed; bottom: 0; right: 0; margin: 15px;">
+        <a href="{% url 'sent_notes' %}" class="btn btn-outline-primary">Sent Notes</a>
+    </div>
+
+
     <script>
         function setUsername(username) {
             document.getElementById('send_to').value = username;

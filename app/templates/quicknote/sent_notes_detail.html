@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note Detail</title>
+</head>
+<body>
+    <h3>Note Detail</h3>
+
+    {% if note %}
+        <p><strong>Sent to:</strong> {{ note.send_to }}</p>
+        <p><strong>Created At:</strong> {{ note.created_at}}</p>
+        <p><strong>Text:</strong></p>
+        <p>{{ note.text }}</p>
+    {% else %}
+        <p>Error! Note not found.</p>
+    {% endif %}
+
+    <a href="{% url 'sent_notes' %}">Back to Notes</a>
+</body>
+</html>

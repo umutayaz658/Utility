@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 import requests
 from django.views.decorators.csrf import csrf_exempt
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MjI3MTIyLCJpYXQiOjE3MjYxNDA3MjIsImp0aSI6ImQ4OTg1YjVhOWNmYTQ0YzM5YjVlZDI5OWUwOGNhNmYyIiwidXNlcl9pZCI6MX0.kucuM0I4SKjAFqGzGc1ITp0lSDybbt-4wZZPmIjSXG8"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MzEzNzUyLCJpYXQiOjE3MjYyMjczNTIsImp0aSI6ImU3ZDYxNjFlZDIwYTQyM2VhNmVhZGU5MjIyYmQ1ZTA3IiwidXNlcl9pZCI6MX0.trFXtontkThL1xob2uOU7qOWiltM8whDG-GZLBzkybg"
 
 
 # MAIN PAGES VIEWS: STARTS
@@ -215,6 +215,43 @@ def quicknote_home(request):
             return render(request, 'quicknote/home.html', {'error': 'Request Error.'})
 
     return render(request, 'quicknote/home.html')
+
+
+def sent_notes_view(request):
+    api_url = 'http://167.71.39.190:8000/api/notes/sent/'
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+
+    response = requests.get(api_url, headers=headers)
+
+    if response.status_code == 200:
+        notes = response.json()
+    else:
+        notes = []
+
+    print('*' * 50)
+    print(notes)
+    print('*' * 50)
+
+    return render(request, 'quicknote/sent_notes.html', {'notes': notes})
+
+
+def note_detail_view(request, note_id):
+    api_url = f'http://167.71.39.190:8000/api/notes/sent/'
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+
+    response = requests.get(api_url, headers=headers)
+
+    if response.status_code == 200:
+        notes = response.json()
+        note = next((item for item in notes if item['id'] == note_id), None)
+        return render(request, 'quicknote/sent_notes_detail.html', {'note': note})
+    else:
+        return render(request, 'quicknote/sent_notes_detail.html', {'note': None})
+
 
 
 # QUICK NOTE VIEWS: ENDS
