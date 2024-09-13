@@ -16,7 +16,7 @@
             <label for="send_to" class="form-label">Send to:</label>
             <input type="text" class="form-control" id="send_to" name="send_to"
                    hx-get="{% url 'user_list' %}"
-                   hx-trigger="keyup changed delay:500ms"
+                   hx-trigger="keyup changed delay:300ms"
                    hx-target="#user-list"
                    hx-indicator="#loading" autocomplete="off">
             <div class="list-group" id="user-list" style="max-height: 200px; overflow-y: auto;"></div>
@@ -49,7 +49,8 @@
     </div>
 
     <div style="position: fixed; bottom: 0; right: 0; margin: 15px;">
-        <a href="{% url 'sent_notes' %}" class="btn btn-outline-primary">Sent Notes</a>
+        <a style="width: 200px" href="{% url 'sent_notes' %}" class="btn btn-outline-primary">Sent Notes</a>
+        <a style="width: 200px" href="{% url 'received_notes' %}" class="btn btn-outline-primary ms-2">Received Notes</a>
     </div>
 
 

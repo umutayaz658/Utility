@@ -9,7 +9,7 @@
     <h3>Note Detail</h3>
 
     {% if note %}
-        <p><strong>Sen to:</strong> {{ note.send_to }}</p>
+        <p><strong>Sen to:</strong> {{ note.created_by }}</p>
         <p><strong>Created at:</strong> {{ note.created_at}}</p>
         <p><strong>Text:</strong></p>
         <p>{{ note.text }}</p>
@@ -17,6 +17,6 @@
         <p>Error! Note not found.</p>
     {% endif %}
 
-    <a href="{% url 'sent_notes' %}">Back to Notes</a>
+    <a href="{% url 'received_notes' %}">Back to Notes</a>
 </body>
 </html>

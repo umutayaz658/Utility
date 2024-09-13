@@ -230,14 +230,26 @@ def sent_notes_view(request):
     else:
         notes = []
 
-    print('*' * 50)
-    print(notes)
-    print('*' * 50)
-
     return render(request, 'quicknote/sent_notes.html', {'notes': notes})
 
 
-def note_detail_view(request, note_id):
+def received_notes_view(request):
+    api_url = 'http://167.71.39.190:8000/api/notes/received/'
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+
+    response = requests.get(api_url, headers=headers)
+
+    if response.status_code == 200:
+        notes = response.json()
+    else:
+        notes = []
+
+    return render(request, 'quicknote/received_notes.html', {'notes': notes})
+
+
+def sent_note_detail_view(request, note_id):
     api_url = f'http://167.71.39.190:8000/api/notes/sent/'
     headers = {
         'Authorization': f'Bearer {token}'
@@ -251,6 +263,22 @@ def note_detail_view(request, note_id):
         return render(request, 'quicknote/sent_notes_detail.html', {'note': note})
     else:
         return render(request, 'quicknote/sent_notes_detail.html', {'note': None})
+
+
+def received_note_detail_view(request, note_id):
+    api_url = f'http://167.71.39.190:8000/api/notes/received/'
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+
+    response = requests.get(api_url, headers=headers)
+
+    if response.status_code == 200:
+        notes = response.json()
+        note = next((item for item in notes if item['id'] == note_id), None)
+        return render(request, 'quicknote/received_notes_detail.html', {'note': note})
+    else:
+        return render(request, 'quicknote/received_notes_detail.html', {'note': None})
 
 
 
