@@ -15,4 +15,5 @@ urlpatterns = [
     path('imagetopdf/', views.imagetopdf_home, name='imagetopdf_home'),
 
     path('quicknote/', views.quicknote_home, name='quicknote_home'),
+    path('user-list/', views.get_user_from_api, name='user_list'),
 ]

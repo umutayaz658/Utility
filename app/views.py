@@ -8,7 +8,8 @@ from django.shortcuts import render, redirect
 import requests
 from django.views.decorators.csrf import csrf_exempt
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MDkxMjg0LCJpYXQiOjE3MjYwMDQ4ODQsImp0aSI6ImVjMzdhZWNhYTg2MzRlMmM5MDgzYzRkZWFhYTY4NmFhIiwidXNlcl9pZCI6MX0.pvKHNkOFs0q5709LbVAkM1Q45RI8vTWbxOkoD4-6n0w"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MjI3MTIyLCJpYXQiOjE3MjYxNDA3MjIsImp0aSI6ImQ4OTg1YjVhOWNmYTQ0YzM5YjVlZDI5OWUwOGNhNmYyIiwidXNlcl9pZCI6MX0.kucuM0I4SKjAFqGzGc1ITp0lSDybbt-4wZZPmIjSXG8"
+
 
 # MAIN PAGES VIEWS: STARTS
 
@@ -17,10 +18,10 @@ def home(request):
     return render(request, 'main/main_page.html')
 
 
-#MAIN PAGES VIEWS: ENDS
+# MAIN PAGES VIEWS: ENDS
 
 
-#URL SHORTENER VIEWS: STARTS
+# URL SHORTENER VIEWS: STARTS
 
 def url_home(request):
     short_url = None
@@ -130,14 +131,16 @@ def update_validity_period(request, short_url):
         else:
             return redirect('user_urls')
 
-#URL SHORTENER VIEWS: ENDS
 
-#QR CODE VIEWS: STARTS
+# URL SHORTENER VIEWS: ENDS
+
+# QR CODE VIEWS: STARTS
 
 
 from django.shortcuts import render
 from django.http import JsonResponse
 import requests
+
 
 @csrf_exempt
 def qrcode_home(request):
@@ -173,9 +176,10 @@ def qrcode_home(request):
 
     return render(request, 'qrcode/home.html')
 
-#QR CODE VIEWS: ENDS
 
-#QUIC NOTE VIEWS: STARTS
+# QR CODE VIEWS: ENDS
+
+# QUIC NOTE VIEWS: STARTS
 
 
 def quicknote_home(request):
@@ -213,9 +217,9 @@ def quicknote_home(request):
     return render(request, 'quicknote/home.html')
 
 
-#QUICK NOTE VIEWS: ENDS
+# QUICK NOTE VIEWS: ENDS
 
-#IMAGE TO PDF VIEWS: STARTS
+# IMAGE TO PDF VIEWS: STARTS
 
 
 def imagetopdf_home(request):
@@ -249,4 +253,19 @@ def imagetopdf_home(request):
 
     return render(request, 'imagetopdf/home.html')
 
-#IMAGE TO PDF VIEWS: ENDS
+
+# IMAGE TO PDF VIEWS: ENDS
+
+def get_user_from_api(request):
+    query = request.GET.get('send_to', '')
+    if query:
+        api_url = f'http://167.71.39.190:8000/autocomplete/users/?send_to={query}'
+        res = requests.get(api_url)
+        if res.status_code == 200:
+            users = res.json()
+        else:
+            users = []
+    else:
+        users = []
+
+    return render(request, 'partials/user_list.html', {'users': users})
