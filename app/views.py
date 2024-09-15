@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 import requests
 from django.views.decorators.csrf import csrf_exempt
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2MzEzNzUyLCJpYXQiOjE3MjYyMjczNTIsImp0aSI6ImU3ZDYxNjFlZDIwYTQyM2VhNmVhZGU5MjIyYmQ1ZTA3IiwidXNlcl9pZCI6MX0.trFXtontkThL1xob2uOU7qOWiltM8whDG-GZLBzkybg"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2NDg4NTE4LCJpYXQiOjE3MjY0MDIxMTgsImp0aSI6IjA2NTZiZWFkNjE4NjRlZGFiYzBmNjg5ZDIwZTMxMzcxIiwidXNlcl9pZCI6MX0.T_tDEQn6S3ILnvRPbDsaMeTaKocPrff4j2VRP--LDM8"
 
 
 # MAIN PAGES VIEWS: STARTS
@@ -279,7 +279,6 @@ def received_note_detail_view(request, note_id):
         return render(request, 'quicknote/received_notes_detail.html', {'note': note})
     else:
         return render(request, 'quicknote/received_notes_detail.html', {'note': None})
-
 
 
 # QUICK NOTE VIEWS: ENDS
