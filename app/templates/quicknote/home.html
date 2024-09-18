@@ -10,7 +10,8 @@
 <body class="container mt-5">
     <h1>Send QuickNote</h1>
     <div id="loading" style="display: none;">Loading...</div>
-    <form method="POST" class="mt-3">
+
+    <form method="POST" enctype="multipart/form-data" class="mt-3">
         {% csrf_token %}
         <div class="mb-3">
             <label for="send_to" class="form-label">Send to:</label>
@@ -24,7 +25,12 @@
 
         <div class="mb-3">
             <label for="text" class="form-label">QuickNote:</label>
-            <textarea class="form-control" id="text" name="text" rows="4" required></textarea>
+            <textarea class="form-control" id="text" name="text" rows="4"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="file" class="form-label">Upload File (Optional):</label>
+            <input type="file" class="form-control" id="file" name="file">
         </div>
 
         <button type="submit" class="btn btn-primary">Send Message</button>
@@ -53,8 +59,17 @@
         <a style="width: 200px" href="{% url 'received_notes' %}" class="btn btn-outline-primary ms-2">Received Notes</a>
     </div>
 
-
     <script>
+        document.querySelector('form').addEventListener('submit', function(event) {
+            var text = document.getElementById('text').value.trim();
+            var file = document.getElementById('file').files.length;
+
+            if (text === '' && file === 0) {
+                event.preventDefault();
+                alert('You must provide either a text message or upload a file.');
+            }
+        });
+
         function setUsername(username) {
             document.getElementById('send_to').value = username;
             document.getElementById('user-list').innerHTML = '';

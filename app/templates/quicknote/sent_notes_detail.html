@@ -9,10 +9,13 @@
     <h3>Note Detail</h3>
 
     {% if note %}
-        <p><strong>Sen to:</strong> {{ note.send_to }}</p>
-        <p><strong>Created at:</strong> {{ note.created_at}}</p>
+        <p><strong>Send to:</strong> {{ note.send_to }}</p>
+        <p><strong>Created at:</strong> {{ note.created_at }}</p>
         <p><strong>Text:</strong></p>
         <p>{{ note.text }}</p>
+        {% if note.file_download_url %}
+            <p><strong>File:</strong> <a href="{{ note.file_download_url }}" download>Download File</a></p>
+        {% endif %}
     {% else %}
         <p>Error! Note not found.</p>
     {% endif %}

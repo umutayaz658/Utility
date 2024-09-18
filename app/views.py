@@ -3,12 +3,12 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 import requests
 from django.views.decorators.csrf import csrf_exempt
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2NDg4NTE4LCJpYXQiOjE3MjY0MDIxMTgsImp0aSI6IjA2NTZiZWFkNjE4NjRlZGFiYzBmNjg5ZDIwZTMxMzcxIiwidXNlcl9pZCI6MX0.T_tDEQn6S3ILnvRPbDsaMeTaKocPrff4j2VRP--LDM8"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2NzMwMDAxLCJpYXQiOjE3MjY2NDM2MDEsImp0aSI6IjA0YWFlNzNhNzRlOTQ4NmNhZmY1ODIyOWU3OTg1YmY0IiwidXNlcl9pZCI6MX0.xVm1Df-Y2fXRdpDUc6o3hAebOQBiAYcJmsQBq0m3Mx4"
 
 
 # MAIN PAGES VIEWS: STARTS
@@ -136,12 +136,6 @@ def update_validity_period(request, short_url):
 
 # QR CODE VIEWS: STARTS
 
-
-from django.shortcuts import render
-from django.http import JsonResponse
-import requests
-
-
 @csrf_exempt
 def qrcode_home(request):
     if request.method == 'POST':
@@ -155,19 +149,16 @@ def qrcode_home(request):
         response = requests.post(api_url, json=body, headers=headers)
 
         if response.status_code == 200:
-            # Eğer download_link varsa JSON dönmeli, görsel değil
             try:
                 response_data = response.json()
                 if 'download_url' in response_data:
-                    # Linki döndürüyoruz
                     return JsonResponse({
                         'message': 'QR code generated successfully.',
                         'download_url': response_data['download_url']
                     })
             except json.JSONDecodeError:
-                # Eğer JSON döndüremiyorsa, görsel dönüyor demektir
                 return HttpResponse(
-                    response.content,  # Görsel içeriğini direkt döndür
+                    response.content,
                     content_type='image/png'
                 )
 
@@ -186,33 +177,45 @@ def quicknote_home(request):
     if request.method == 'POST':
         send_to = request.POST.get('send_to')
         text = request.POST.get('text')
+        file = request.FILES.get('file')
 
-        if not send_to or not text:
-            return render(request, 'quicknote/home.html', {'error': 'Fields must be filled.'})
+        if not send_to or (not text and not file):
+            return render(request, 'quicknote/home.html', {'error': 'You must provide either text or a file.'})
 
         api_url = 'http://167.71.39.190:8000/api/notes/'
 
+        if not token:
+            return render(request, 'quicknote/home.html', {'error': 'You are not authenticated.'})
+
         headers = {
             'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json',
         }
 
-        body = {
+        data = {
             'send_to': send_to,
-            'text': text,
         }
+
+        if text:
+            data['text'] = text
+
+        files = {}
+        if file:
+            files['file'] = file
 
         try:
-            response = requests.post(api_url, json=body, headers=headers)
+            if files:
+                response = requests.post(api_url, data=data, files=files, headers=headers)
+            else:
+                response = requests.post(api_url, data=data, headers=headers)
 
             if response.status_code == 201:
                 return render(request, 'quicknote/home.html', {'success': True})
             else:
-                error_message = response.json().get('error', 'Error.')
+                error_message = response.json().get('detail', 'Something went wrong.')
                 return render(request, 'quicknote/home.html', {'error': error_message})
 
         except requests.exceptions.RequestException as e:
-            return render(request, 'quicknote/home.html', {'error': 'Request Error.'})
+            return render(request, 'quicknote/home.html', {'error': 'An error occurred while making the request.'})
 
     return render(request, 'quicknote/home.html')
 
