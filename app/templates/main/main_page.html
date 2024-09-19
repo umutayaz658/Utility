@@ -53,9 +53,9 @@
     <div class="header">
         <div class="user-info">
             <div class="user-icon" id="user-icon">
-                <span id="user-initial">{{ user.username.0|upper }}</span>
+                <span id="user-initial">{{ username.0|upper }}</span>
             </div>
-            <span id="username">{{ user.username }}</span>
+            <span id="username">{{ username }}</span>
         </div>
 
         <div>
@@ -65,27 +65,17 @@
 
     <div class="container text-center content">
         <h1>Home Page</h1>
-
-        <a href="{% if user.is_authenticated %}{% url 'url_home' %}{% else %}#{% endif %}">
-            <button type="button" class="btn btn-primary mt-3 btn-custom"
-                    {% if not user.is_authenticated %} disabled {% endif %}>
-                URL Shortener
-            </button>
+        <a href="{% url 'url_home' %}">
+            <button type="button" class="btn btn-primary mt-3 btn-custom">URL Shortener</button>
         </a>
-
         <a href="{% url 'qrcode_home' %}">
             <button type="button" class="btn btn-primary mt-3 ms-3 btn-custom">QR Code Generator</button>
         </a>
     </div>
-
     <div class="container text-center">
-        <a href="{% if user.is_authenticated %}{% url 'quicknote_home' %}{% else %}#{% endif %}">
-            <button type="button" class="btn btn-primary mt-3 btn-custom"
-                    {% if not user.is_authenticated %} disabled {% endif %}>
-                Quick Note
-            </button>
+        <a href="{% url 'quicknote_home' %}">
+            <button type="button" class="btn btn-primary mt-3 btn-custom">Quick Note</button>
         </a>
-
         <a href="{% url 'imagetopdf_home' %}">
             <button type="button" class="btn btn-primary mt-3 ms-3 btn-custom">Image to PDF</button>
         </a>
