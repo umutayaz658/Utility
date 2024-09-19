@@ -67,6 +67,7 @@ def home(request):
 
 # URL SHORTENER VIEWS: STARTS
 
+@login_required(login_url='/login/')
 def url_home(request):
     short_url = None
     if request.method == 'POST':
@@ -97,6 +98,7 @@ def url_home(request):
     return render(request, 'url/home.html', {'short_url': short_url})
 
 
+@login_required(login_url='/login/')
 def user_urls(request):
     api_url = "http://167.71.39.190:8000/api/urls/"
 
