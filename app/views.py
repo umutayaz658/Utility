@@ -8,14 +8,58 @@ from django.shortcuts import render, redirect
 import requests
 from django.views.decorators.csrf import csrf_exempt
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2NzMwMDAxLCJpYXQiOjE3MjY2NDM2MDEsImp0aSI6IjA0YWFlNzNhNzRlOTQ4NmNhZmY1ODIyOWU3OTg1YmY0IiwidXNlcl9pZCI6MX0.xVm1Df-Y2fXRdpDUc6o3hAebOQBiAYcJmsQBq0m3Mx4"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2ODE5ODM3LCJpYXQiOjE3MjY3MzM0MzcsImp0aSI6Ijc5N2Q4ZDE2OTAxNzQ4MGY4MjljNjRlZTEwNGI2NTlhIiwidXNlcl9pZCI6MX0.xj53uHOvkL-vOJ3PwiK4vlLRja8LowmyEzoqN1fVazM"
+
+
+# USER VIEWS: STARTS
+
+def register_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        response = requests.post(f'http://167.71.39.190:8000/api/register/',
+                                 json={'username': username, 'password': password})
+        if response.status_code == 201:
+            return redirect('login')
+        elif response.status_code == 400 and response.json().get('error') == 'User already exists':
+            error_message = 'This username is used.'
+            return render(request, 'user/register.html', {'error': error_message})
+        else:
+            return render(request, 'user/register.html', {'error': 'An error occurred. Please try again.'})
+    return render(request, 'user/register.html')
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        response = requests.post(f'http://167.71.39.190:8000/api/login/',
+                                 json={'username': username, 'password': password})
+        if response.status_code == 200:
+            request.session['username'] = username
+            return redirect('home')
+        else:
+            error_message = response.json().get('message', 'Invalid login informations.')
+            return render(request, 'user/login.html', {'error': error_message})
+    return render(request, 'user/login.html')
+
+
+def logout_view(request):
+    response = requests.post(f'http://167.71.39.190:8000/api/logout/')
+    if response.status_code == 200:
+        request.session.flush()
+        return redirect('login')
+    return HttpResponse(f"Error: {response.json().get('message')}", status=response.status_code)
+
+# USER VIEWS: ENDS
 
 
 # MAIN PAGES VIEWS: STARTS
 
 
 def home(request):
-    return render(request, 'main/main_page.html')
+    username = request.session.get('username', 'Guest')
+    return render(request, 'main/main_page.html', {'username': username})
 
 
 # MAIN PAGES VIEWS: ENDS

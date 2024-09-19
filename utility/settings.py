@@ -80,10 +80,14 @@ WSGI_APPLICATION = 'utility.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.dummy',
+        'NAME': '',
     }
 }
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'  # or 'django.contrib.sessions.backends.file'
+SESSION_CACHE_ALIAS = 'default'  # If using cache backend
+
 
 
 # Password validation

@@ -4,6 +4,10 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
 
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('register/', views.register_view, name='register'),
+
     path('url/', views.url_home, name='url_home'),
     path('url/user_urls/', views.user_urls, name='user_urls'),
     path('url/deactivate/<str:short_url>/', views.deactivate_url, name='deactivate_url'),
