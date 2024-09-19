@@ -89,6 +89,25 @@ def deactivate_url(request, short_url):
         return redirect('user_urls')
 
 
+def activate_url(request, short_url):
+    API_URL = 'http://167.71.39.190:8000/api/update_activity/'
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.put(
+        f'{API_URL}{short_url}/',
+        json={'is_active': True},
+        headers=headers
+    )
+
+    if response.status_code == 200:
+        return redirect('user_urls')
+    else:
+        return redirect('user_urls')
+
+
 def delete_url(request, short_url):
     API_URL = 'http://167.71.39.190:8000/api/delete/'
     headers = {

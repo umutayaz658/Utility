@@ -74,10 +74,11 @@
                 <td>{{ url.validity_period }}</td>
                 <td style="text-align: center">{% if url.is_active %}✔️{% else %}✖️{% endif %}</td>
                 <td style="text-align: center">{{ url.one_time_only|yesno:"Yes,No"}}</td>
-                <td>
+                <td style="text-align: center">
                     {% if url.is_active %}
-                    <a href="{% url 'deactivate_url' short_url=url.short_url %}" class="btn btn-outline-primary btn-sm">Deactivate</a>
-
+                        <a href="{% url 'deactivate_url' short_url=url.short_url %}" class="btn btn-outline-danger btn-sm btn-block">Deactivate</a>
+                    {% else %}
+                        <a href="{% url 'activate_url' short_url=url.short_url %}" class="btn btn-outline-primary btn-sm btn-block">Activate</a>
                     {% endif %}
                 </td>
                 <td class="extend">
@@ -89,14 +90,18 @@
                     </form>
                     {% endif %}
                 </td>
-                <td>
+                <td style="text-align: center">
                     {% if not url.is_active %}
                     <form method="post" action="{% url 'delete_url' short_url=url.short_url %}" class="d-inline">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                     </form>
+                    {% else %}
+                        <span data-toggle="tooltip" data-placement="top" title="Can't delete while URL is active">
+                            ❗
+                        </span>
                     {% endif %}
-        </td>
+                </td>
             </tr>
             {% endif %}
             {% empty %}
@@ -110,9 +115,9 @@
             <a href="{% url 'url_home' %}" class="btn btn-outline-secondary">Back</a>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
@@ -120,6 +125,11 @@
             enableTime: true,
             dateFormat: "Y-m-d H:i",
             time_24hr: true
+        });
+    </script>
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip(); // Initialize tooltips
         });
     </script>
 
