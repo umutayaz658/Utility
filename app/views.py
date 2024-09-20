@@ -68,7 +68,6 @@ def home(request):
 # URL SHORTENER VIEWS: STARTS
 
 
-@login_required(login_url='/login/')
 def url_home(request):
     short_url = None
     if request.method == 'POST':
