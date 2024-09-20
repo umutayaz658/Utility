@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 import requests
 from django.views.decorators.csrf import csrf_exempt
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2ODE5ODM3LCJpYXQiOjE3MjY3MzM0MzcsImp0aSI6Ijc5N2Q4ZDE2OTAxNzQ4MGY4MjljNjRlZTEwNGI2NTlhIiwidXNlcl9pZCI6MX0.xj53uHOvkL-vOJ3PwiK4vlLRja8LowmyEzoqN1fVazM"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2OTE2NzQ0LCJpYXQiOjE3MjY4MzAzNDQsImp0aSI6IjI3NDMwNWIyMThhOTRkNTE5MzBlN2FiMjdkN2ZjMjViIiwidXNlcl9pZCI6Nn0.C3sKYntuU0LEwxcfnAymCOJJLGQTY7K5TS2-WLlBzhU"
 
 
 # USER VIEWS: STARTS
@@ -68,35 +68,38 @@ def home(request):
 # URL SHORTENER VIEWS: STARTS
 
 
-@login_required(login_url='/login/')
 def url_home(request):
-    short_url = None
-    if request.method == 'POST':
-        long_url = request.POST.get('long_url')
-        validity_period = request.POST.get('validity_period')
-        one_time_only = request.POST.get('one_time_only') == 'on'
-        password = request.POST.get('password')
+    if request.user.is_authenticated:
+        short_url = None
+        if request.method == 'POST':
+            long_url = request.POST.get('long_url')
+            validity_period = request.POST.get('validity_period')
+            one_time_only = request.POST.get('one_time_only') == 'on'
+            password = request.POST.get('password')
 
-        api_url = 'http://167.71.39.190:8000/api/create_short_url/'
-        headers = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json'
-        }
-        data = {
-            'long_url': long_url,
-            'validity_period': validity_period,
-            'is_active': True,
-            'one_time_only': one_time_only,
-            'password': password
-        }
+            api_url = 'http://167.71.39.190:8000/api/create_short_url/'
+            headers = {
+                'Authorization': f'Bearer {token}',
+                'Content-Type': 'application/json'
+            }
+            data = {
+                'long_url': long_url,
+                'validity_period': validity_period,
+                'is_active': True,
+                'one_time_only': one_time_only,
+                'password': password
+            }
 
-        response = requests.post(api_url, json=data, headers=headers)
-        if response.status_code == 201:
-            short_url = response.json().get('short_url')
-        else:
-            short_url = 'Error'
+            response = requests.post(api_url, json=data, headers=headers)
+            if response.status_code == 201:
+                short_url = response.json().get('short_url')
+            else:
+                short_url = 'Error'
 
-    return render(request, 'url/home.html', {'short_url': short_url})
+        return render(request, 'url/home.html', {'short_url': short_url})
+    else:
+        return redirect('login')
+
 
 
 @login_required(login_url='/login/')
