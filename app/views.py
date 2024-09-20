@@ -3,7 +3,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, FileResponse
 from django.shortcuts import render, redirect
 import requests
 from django.views.decorators.csrf import csrf_exempt
@@ -372,8 +372,10 @@ def imagetopdf_home(request):
 
         if response.status_code == 201:
             response_data = response.json()
+            pdf_url = response_data.get('download_url', '')
+
             return JsonResponse({
-                'download_url': response_data.get('download_url', '')
+                'preview_url': pdf_url
             })
         else:
             try:
