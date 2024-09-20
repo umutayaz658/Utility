@@ -69,37 +69,33 @@ def home(request):
 
 
 def url_home(request):
-    if request.user.is_authenticated:
-        short_url = None
-        if request.method == 'POST':
-            long_url = request.POST.get('long_url')
-            validity_period = request.POST.get('validity_period')
-            one_time_only = request.POST.get('one_time_only') == 'on'
-            password = request.POST.get('password')
+    short_url = None
+    if request.method == 'POST':
+        long_url = request.POST.get('long_url')
+        validity_period = request.POST.get('validity_period')
+        one_time_only = request.POST.get('one_time_only') == 'on'
+        password = request.POST.get('password')
 
-            api_url = 'http://167.71.39.190:8000/api/create_short_url/'
-            headers = {
-                'Authorization': f'Bearer {token}',
-                'Content-Type': 'application/json'
-            }
-            data = {
-                'long_url': long_url,
-                'validity_period': validity_period,
-                'is_active': True,
-                'one_time_only': one_time_only,
-                'password': password
-            }
+        api_url = 'http://167.71.39.190:8000/api/create_short_url/'
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+        data = {
+            'long_url': long_url,
+            'validity_period': validity_period,
+            'is_active': True,
+            'one_time_only': one_time_only,
+            'password': password
+        }
 
-            response = requests.post(api_url, json=data, headers=headers)
-            if response.status_code == 201:
-                short_url = response.json().get('short_url')
-            else:
-                short_url = 'Error'
+        response = requests.post(api_url, json=data, headers=headers)
+        if response.status_code == 201:
+            short_url = response.json().get('short_url')
+        else:
+            short_url = 'Error'
 
-        return render(request, 'url/home.html', {'short_url': short_url})
-    else:
-        return redirect('login')
-
+    return render(request, 'url/home.html', {'short_url': short_url})
 
 
 @login_required(login_url='/login/')
