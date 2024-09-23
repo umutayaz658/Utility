@@ -308,7 +308,7 @@ def sent_notes_view(request):
     response = requests.get(api_url, headers=headers)
 
     if response.status_code == 200:
-        notes = response.json()
+        notes = reversed(response.json())
     else:
         notes = []
 
@@ -327,7 +327,7 @@ def received_notes_view(request):
     response = requests.get(api_url, headers=headers)
 
     if response.status_code == 200:
-        notes = response.json()
+        notes = reversed(response.json())
     else:
         notes = []
 
