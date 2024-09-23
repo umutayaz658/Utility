@@ -8,8 +8,6 @@ from django.shortcuts import render, redirect
 import requests
 from django.views.decorators.csrf import csrf_exempt
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI2OTE2NzQ0LCJpYXQiOjE3MjY4MzAzNDQsImp0aSI6IjI3NDMwNWIyMThhOTRkNTE5MzBlN2FiMjdkN2ZjMjViIiwidXNlcl9pZCI6Nn0.C3sKYntuU0LEwxcfnAymCOJJLGQTY7K5TS2-WLlBzhU"
-
 
 # USER VIEWS: STARTS
 
@@ -33,14 +31,22 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        response = requests.post(f'http://167.71.39.190:8000/api/login/',
-                                 json={'username': username, 'password': password})
+
+        api_url = 'http://167.71.39.190:8000/api/token/'
+
+        response = requests.post(api_url, json={'username': username, 'password': password})
+
         if response.status_code == 200:
+            tokens = response.json()
+
             request.session['username'] = username
+            request.session['access_token'] = tokens.get('access')
+
             return redirect('home')
         else:
-            error_message = response.json().get('message', 'Invalid login informations.')
+            error_message = response.json().get('detail', 'Invalid login information.')
             return render(request, 'user/login.html', {'error': error_message})
+
     return render(request, 'user/login.html')
 
 
@@ -69,6 +75,9 @@ def home(request):
 
 
 def url_home(request):
+    if not request.session.get("access_token"):
+        return redirect('login')
+
     short_url = None
     if request.method == 'POST':
         long_url = request.POST.get('long_url')
@@ -78,7 +87,7 @@ def url_home(request):
 
         api_url = 'http://167.71.39.190:8000/api/create_short_url/'
         headers = {
-            'Authorization': f'Bearer {token}',
+            'Authorization': f'Bearer {request.session.get("access_token")}',
             'Content-Type': 'application/json'
         }
         data = {
@@ -98,12 +107,14 @@ def url_home(request):
     return render(request, 'url/home.html', {'short_url': short_url})
 
 
-@login_required(login_url='/login/')
 def user_urls(request):
+    if not request.session.get("access_token"):
+        return redirect('login')
+
     api_url = "http://167.71.39.190:8000/api/urls/"
 
     headers = {
-        "Authorization": f"Bearer {token}"
+        "Authorization": f"Bearer {request.session.get('access_token')}"
     }
 
     try:
@@ -119,7 +130,7 @@ def user_urls(request):
 def deactivate_url(request, short_url):
     API_URL = 'http://167.71.39.190:8000/api/update_activity/'
     headers = {
-        'Authorization': f'Bearer {token}',
+        'Authorization': f'Bearer {request.session.get("access_token")}',
         'Content-Type': 'application/json'
     }
 
@@ -138,7 +149,7 @@ def deactivate_url(request, short_url):
 def activate_url(request, short_url):
     API_URL = 'http://167.71.39.190:8000/api/update_activity/'
     headers = {
-        'Authorization': f'Bearer {token}',
+        'Authorization': f'Bearer {request.session.get("access_token")}',
         'Content-Type': 'application/json'
     }
 
@@ -157,7 +168,7 @@ def activate_url(request, short_url):
 def delete_url(request, short_url):
     API_URL = 'http://167.71.39.190:8000/api/delete/'
     headers = {
-        'Authorization': f'Bearer {token}',
+        'Authorization': f'Bearer {request.session.get("access_token")}',
         'Content-Type': 'application/json'
     }
 
@@ -181,7 +192,7 @@ def update_validity_period(request, short_url):
 
         API_URL = 'http://167.71.39.190:8000/api/update_validity/'
         headers = {
-            'Authorization': f'Bearer {token}',
+            'Authorization': f'Bearer {request.session.get("access_token")}',
             'Content-Type': 'application/json'
         }
 
@@ -239,6 +250,9 @@ def qrcode_home(request):
 
 
 def quicknote_home(request):
+    if not request.session.get("access_token"):
+        return redirect('login')
+
     if request.method == 'POST':
         send_to = request.POST.get('send_to')
         text = request.POST.get('text')
@@ -249,11 +263,8 @@ def quicknote_home(request):
 
         api_url = 'http://167.71.39.190:8000/api/notes/'
 
-        if not token:
-            return render(request, 'quicknote/home.html', {'error': 'You are not authenticated.'})
-
         headers = {
-            'Authorization': f'Bearer {token}',
+            'Authorization': f'Bearer {request.session.get("access_token")}',
         }
 
         data = {
@@ -286,9 +297,12 @@ def quicknote_home(request):
 
 
 def sent_notes_view(request):
+    if not request.session.get("access_token"):
+        return redirect('login')
+
     api_url = 'http://167.71.39.190:8000/api/notes/sent/'
     headers = {
-        'Authorization': f'Bearer {token}'
+        'Authorization': f'Bearer {request.session.get("access_token")}'
     }
 
     response = requests.get(api_url, headers=headers)
@@ -302,9 +316,12 @@ def sent_notes_view(request):
 
 
 def received_notes_view(request):
+    if not request.session.get("access_token"):
+        return redirect('login')
+
     api_url = 'http://167.71.39.190:8000/api/notes/received/'
     headers = {
-        'Authorization': f'Bearer {token}'
+        'Authorization': f'Bearer {request.session.get("access_token")}'
     }
 
     response = requests.get(api_url, headers=headers)
@@ -320,7 +337,7 @@ def received_notes_view(request):
 def sent_note_detail_view(request, note_id):
     api_url = f'http://167.71.39.190:8000/api/notes/sent/'
     headers = {
-        'Authorization': f'Bearer {token}'
+        'Authorization': f'Bearer {request.session.get("access_token")}'
     }
 
     response = requests.get(api_url, headers=headers)
@@ -336,7 +353,7 @@ def sent_note_detail_view(request, note_id):
 def received_note_detail_view(request, note_id):
     api_url = f'http://167.71.39.190:8000/api/notes/received/'
     headers = {
-        'Authorization': f'Bearer {token}'
+        'Authorization': f'Bearer {request.session.get("access_token")}'
     }
 
     response = requests.get(api_url, headers=headers)
@@ -363,7 +380,7 @@ def imagetopdf_home(request):
 
         api_url = 'http://167.71.39.190:8000/api/imagetopdf/'
         headers = {
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {request.session.get("access_token")}'
         }
 
         files_dict = [('image_paths', (file.name, file, file.content_type)) for file in files]
