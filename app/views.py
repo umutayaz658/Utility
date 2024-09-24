@@ -288,7 +288,7 @@ def quicknote_home(request):
                 return render(request, 'quicknote/home.html', {'success': True})
             else:
                 error_message = response.json().get('detail', 'Something went wrong.')
-                return render(request, 'quicknote/home.html', {'error': error_message})
+                return render(request, 'user/login.html', {'error': "Your session has ended."})
 
         except requests.exceptions.RequestException as e:
             return render(request, 'quicknote/home.html', {'error': 'An error occurred while making the request.'})
