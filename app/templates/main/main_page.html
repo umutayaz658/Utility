@@ -38,7 +38,7 @@
             font-size: 24px;
             margin-right: 10px;
         }
-        .btn-logout {
+        .btn-logout, .btn-login {
             margin-right: 20px;
         }
         .content {
@@ -65,7 +65,11 @@
         </div>
 
         <div>
-            <a href="{% url 'logout' %}" class="btn btn-danger btn-logout">Logout</a>
+            {% if username == "Guest" %}
+                <a href="{% url 'login' %}" class="btn btn-success btn-login">Login</a>
+            {% else %}
+                <a href="{% url 'logout' %}" class="btn btn-danger btn-logout">Logout</a>
+            {% endif %}
         </div>
     </div>
 

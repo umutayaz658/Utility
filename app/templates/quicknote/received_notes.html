@@ -125,6 +125,12 @@
         .list-group-item {
             cursor: pointer;
         }
+
+        #placeholder {
+            color: #6c757d;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body class="container-fluid mt-3">
@@ -141,6 +147,8 @@
                         <a href="{% url 'received_notes_detail' note.id %}"
                            hx-get="{% url 'received_notes_detail' note.id %}"
                            hx-target="#note-content"
+                           hx-swap="innerHTML"
+                           onclick="hidePlaceholder()"
                            style="text-decoration: none; color: inherit; display: block;">
                             <small class="note-send-from">From: {{ note.created_by }}</small><br>
                             <div class="note-summary">
@@ -161,6 +169,7 @@
         </div>
         <div class="row">
             <div class="col-12 note-content" id="note-content" style="margin-left: 25px; margin-top: 25px">
+                <div id="placeholder">Please select a note to view.</div>
             </div>
         </div>
     </div>
@@ -175,6 +184,13 @@
             const mainContent = document.querySelector('.main-content');
             sidebar.classList.toggle('show');
             mainContent.classList.toggle('shifted');
+        }
+
+        function hidePlaceholder() {
+            const placeholder = document.getElementById('placeholder');
+            if (placeholder) {
+                placeholder.style.display = 'none';
+            }
         }
     </script>
 

@@ -379,12 +379,9 @@ def imagetopdf_home(request):
             return JsonResponse({'error': 'No files were uploaded'}, status=400)
 
         api_url = 'http://167.71.39.190:8000/api/imagetopdf/'
-        headers = {
-            'Authorization': f'Bearer {request.session.get("access_token")}'
-        }
 
         files_dict = [('image_paths', (file.name, file, file.content_type)) for file in files]
-        response = requests.post(api_url, files=files_dict, headers=headers)
+        response = requests.post(api_url, files=files_dict)
 
         if response.status_code == 201:
             response_data = response.json()

@@ -111,6 +111,12 @@
         .list-group-item {
             cursor: pointer;
         }
+
+        #placeholder-message {
+            font-size: 1.2em;
+            color: #6c757d;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body class="container-fluid mt-3">
@@ -127,6 +133,7 @@
                         <a href="{% url 'sent_notes_detail' note.id %}"
                            hx-get="{% url 'sent_notes_detail' note.id %}"
                            hx-target="#note-content"
+                           hx-swap="innerHTML"
                            style="text-decoration: none; color: inherit; display: block;">
                             <small class="note-send-to">To: {{ note.send_to }}</small><br>
                             <div class="note-summary">
@@ -147,6 +154,7 @@
         </div>
         <div class="row">
             <div class="col-12 note-content" id="note-content" style="margin-left: 25px; margin-top: 25px">
+                <div id="placeholder-message">Please select a note to view.</div>
             </div>
         </div>
     </div>
@@ -162,6 +170,13 @@
             sidebar.classList.toggle('show');
             mainContent.classList.toggle('shifted');
         }
+
+        document.addEventListener('htmx:afterOnLoad', function (event) {
+            const placeholder = document.getElementById('placeholder-message');
+            if (placeholder) {
+                placeholder.style.display = 'none';
+            }
+        });
     </script>
 
 </body>
